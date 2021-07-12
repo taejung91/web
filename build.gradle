@@ -1,0 +1,51 @@
+plugins {
+	id 'org.springframework.boot' version '2.5.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'project'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+
+	maven { url 'https://jitpack.io' }
+	maven {
+		url = 'https://maven.cksource.com/'
+	}
+}
+
+dependencies {
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	/*
+	아임포트
+	 */
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.15'
+
+	//ckfinder
+//	compileOnly 'com.cksource:ckfinder3:3.5.1.1'
+
+	// StringUtils
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.8'
+
+
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'mysql:mysql-connector-java'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+	useJUnitPlatform()
+}

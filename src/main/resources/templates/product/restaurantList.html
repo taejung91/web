@@ -1,0 +1,116 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
+
+<head th:replace="/../fragments/header"></head>
+
+<style>
+    img {
+        display: block;
+        margin: 0px auto;
+    }
+
+    #sub{
+        display: inline-block;
+        text-align: center;
+    }
+
+</style>
+<body>
+<header>
+    <div class="container">
+        <div class="text-center bg-body">
+
+            <img class="title" style="width:95%" th:src="@{/banner/product2.jpg}" alt="..."/>
+
+
+            <p></p>
+            <div id="sub">
+                <form action="@{/product/list}" id="form" name="form" method="get">
+                    <div class="input-group input-group-lg" style="width:100%">
+                        <input class="form-control" type="text" id="searchKeyword" name="searchKeyword"
+                               placeholder="식당명 or 주소"
+                               aria-label="식당명 or 주소"
+                               aria-describedby="button-submit"/>
+                        <button class="btn btn-dark" id="button" type="button" th:onclick="check()">검색</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</header>
+
+
+<div class="container px-4 px-lg-5 my-5" th:each="restaurant : ${restaurants}">
+    <div class="row gx-4 gx-lg-5 align-items-center">
+        <div class="col-md-3">
+            <div class="badge bg-dark text-white" style="top: 0.5rem; right: 0.5rem"
+                 th:if="${restaurant.bestyn == 'y'}">
+                Best
+            </div>
+            <img class="card-img-top " th:src="${restaurant.image}" alt="..." style="width: 100%; height: 300px;"/>
+        </div>
+        <div class="col-9">
+            <div class="small mb-1" th:text="${restaurant.kind}">타입</div>
+            <h1 class="display-5 fw-bolder" th:text="${restaurant.res_name}">식당명</h1>
+            <span th:text="${restaurant.addr}">주소</span></br>
+            <span th:text="${restaurant.tel}">전화번호</span>
+            <!--<p class="lead" th:text="${restaurant.content}">내용</p>-->
+            <div class="fs-5 mb-3">
+                <span th:text="|${restaurant.price1} 원|">성인 요금</span>
+            </div>
+
+            <p></p>
+            <div class="d-flex">
+                <a class="btn btn-outline-dark flex-shrink-0"
+                   th:href="|@{/product/Detail/{num}(num=${restaurant.num})}${params.makeQueryString(params.currentPageNo)}|">
+                    <i class="bi-cart-fill me-1"></i>
+                    상세보기
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<p></p>
+<th:block layout:fragment="paging">
+    <nav th:replace="fragments/paging :: pagination"></nav>
+</th:block>
+
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        function movePage(uri, queryString) {
+            location.href = uri + queryString;
+        }
+
+        /*]]>*/
+    </script>
+</th:block>
+
+<script>
+    function check() {
+        let text = $("#searchKeyword").val();
+
+        if (text == "") {
+            alert("내용을 입력해주세요.");
+            return false;
+        } else {
+            document.form.action = "/product/list";
+            document.form.submit();
+        }
+
+
+    }
+</script>
+
+
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+
+</body>
+</html>

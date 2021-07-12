@@ -1,0 +1,248 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
+
+<head th:replace="/../fragments/header">
+</head>
+
+<script language="javascript" type="text/javascript" th:inline="javascript">
+    $(document).ready(function () {
+        //!******************************************************************************
+        // 상세검색 달력 스크립트
+        //!******************************************************************************
+
+        $("#date").datepicker({
+            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+            dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+            weekHeader: 'Wk',
+
+            autoSize: false, //오토리사이즈(body등 상위태그의 설정에 따른다)
+            changeMonth: true, //월변경가능
+            changeYear: true, //년변경가능
+            showMonthAfterYear: true, //년 뒤에 월 표시
+            //buttonImageOnly: true, //이미지표시
+            buttonText: '예약날짜', //버튼 텍스트 표시
+            //buttonImage: 'res/img/comn/calendar.gif', //이미지주소
+            showOn: "button", //엘리먼트와 이미지 동시 사용(both,button)
+            yearRange: '2010:2021', //1990년부터 2020년까지
+            showButtonPanel: true,
+            closeText: '닫기',
+            currentText: '현재 년도',
+            dateFormat: "yy-mm-dd",
+            minDate: 0,
+            onSelect: function () {
+
+                let selectDate = $.datepicker.formatDate("yy-mm-dd", $("#date").datepicker("getDate"));
+                let restaurantDateArray = new Array();
+                let restaurantDate = new Date();
+
+                /*[# th:each="date : ${restaurantDate}"]*/
+                restaurantDate = /*[[ ${date.date} ]]*/;
+                // restaurantTime = /*[[ ${date.time} ]]*/;
+                restaurantDateArray.push(restaurantDate);
+                /*[/]*/
+
+                if (restaurantDateArray.includes(selectDate)) {
+
+                    console.log(selectDate);
+                    $.ajax({
+                        data: {
+                            num: /*[[ ${restaurant.num} ]]*/,
+                            date: selectDate
+                        },
+                        url: "/product/time",
+                        success: function (data) {
+
+                            $("#time").children("option:not(:first)").remove();
+
+                            for (let i = 0; i < data.length; i++) {
+                                // $("#time").append("<option value='" + data[i].qtt + "'>" + data[i].time + " _ " + data[i].qtt + " 명" + "</option>");
+                                $("#time").append("<option value='" + data[i].time + "'>" + data[i].time + "</option>");
+                            }
+                        }
+                    });
+                } else {
+
+                    $("#time").children("option:not(:first)").remove();
+                    $("#qtt").children("option:not(:first)").remove();
+
+                    alert("예약 가능한 날짜가 없습니다.");
+                }
+            }
+        });
+    });
+
+    function change() {
+        let select_date = $("#date").val();
+        let select_time = $("#time option:selected").val();
+        console.log(select_date + "/" + select_time);
+
+        $.ajax({
+            data: {
+                num: /*[[ ${restaurant.num} ]]*/,
+                date: select_date,
+                time: select_time
+            },
+            url: "/product/qtt",
+            success: function (data) {
+
+                $("#qtt").children("option:not(:first)").remove();
+
+                for (let i = 1; i <= data.qtt; i++) {
+
+                    $("#qtt").append("<option value='" + i + "'>" + i + " 명" + "</option>");
+                }
+            }
+        });
+    }
+
+    function check() {
+
+        let select_date = $("#date").val();
+        let select_time = $("#time option:selected").val();
+        let select_qtt = $("#qtt option:selected").val();
+        console.log(select_date + "/" + select_time + "/" + select_qtt);
+
+        if (select_date == "") {
+            alert("날짜를 선택해주세요.");
+            return false;
+
+        } else if (select_time == "") {
+            alert("시간을 선택해주세요.");
+            return false;
+        } else if (select_qtt == "") {
+            alert("인원을 선택해주세요.");
+            return false;
+        }
+
+        $("#form").submit();
+
+    }
+
+</script>
+
+<body>
+<form action="/product/reservation" name="form" id="form" method="get">
+    <section class="py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="row gx-4 gx-lg-5 align-items-center">
+                <div class="col-md-4">
+                    <img class="card-img-top mb-5 mb-md-0" th:src="${restaurant.image}" alt="..." style="width: 100%; height:400px;"/></div>
+
+                <div class="col-7">
+                    <div class="badge bg-dark text-white" style="top: 0.5rem; right: 0.5rem"
+                         th:if="${restaurant.bestyn == 'y'}">
+                        Best
+                    </div>
+                    <p></p>
+                    <div class="small mb-1" th:text="${restaurant.kind}">타입</div>
+                    <h1 class="display-5 fw-bolder" id="res_name" name="res_name" th:text="${restaurant.res_name}">
+                        식당명</h1></br>
+                    <div id="addr" name="addr" th:text="${restaurant.addr}">주소</div>
+                    </br>
+                    <div th:text="${restaurant.tel}">전화번호</div>
+                    </br>
+                    <!--<p class="lead" th:text="${restaurant.content}">내용</p>-->
+                    <div class="fs-5 mb-3">
+                        <h2 th:text="|1인 -  ${restaurant.price1} 원|">예약금</h2>
+                    </div>
+
+                    <input type="hidden" id="num" name="num" th:value="${restaurant.num}">
+
+                    <input type="text" id="date" name="date" readonly>
+
+                    <select name="time" id="time" onchange="change()">예약시간
+                        <option value="">예약시간</option>
+                    </select>
+
+                    <select name="qtt" id="qtt">인원수
+                        <option value="">예약인원</option>
+                    </select>
+
+                    <button type="button" class="btn btn-dark" onclick="check()"> 예약하기</button>
+                </div>
+            </div>
+            <p></p>
+            <h4>위치 정보</h4>
+            <p></p>
+            <div class="col-11 justify-content-center" id="map" style="width: 80%; height: 400px;"></div>
+
+            <p></p>
+
+            <h4>상세 정보</h4>
+            <p></p>
+            <div class="col-11 justify-content-center" id="content" name="content"></div>
+            <div>
+
+            </div>
+        </div>
+
+    </section>
+
+</form>
+
+<script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8130cb233353e055c9a9c0e6c556db76&libraries=services"
+        th:inline="javascript"></script>
+
+<script>
+    var name = $("#res_name").text();
+    var container = document.getElementById('map'); // 지도를 표시할 div
+    var options = {
+        center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        level: 4
+        // 지도의 확대 레벨
+    };
+    // 지도를 생성
+    var map = new kakao.maps.Map(container, options);
+
+    // 주소-좌표 변환 객체를 생성
+    var geocoder = new kakao.maps.services.Geocoder();
+
+    var addr = $("#addr").text();
+
+    // 주소로 좌표를 검색
+
+    var callback = function (result, status) {
+        // 정상적으로 검색이 완료
+        if (status === kakao.maps.services.Status.OK) {
+
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // 결과값으로 받은 위치를 마커로 표시
+            var marker = new kakao.maps.Marker({
+                map: map,
+                position: coords
+            });
+
+            // 인포윈도우로 장소에 대한 설명을 표시
+            var infowindow = new kakao.maps.InfoWindow(
+                {
+                    content: "<div style='width:150px;text-align:center;padding:6px 0; font-size:15px'>"
+                        + name + "</div>"
+                });
+            infowindow.open(map, marker);
+
+            // 지도의 중심을 결과값으로 받은 위치로 이동
+            map.setCenter(coords);
+        }
+    }
+    geocoder.addressSearch(addr, callback);
+</script>
+
+<script th:inline="javascript">
+
+    let result = document.getElementById("content");
+    let content = /*[[ ${restaurant.content} ]]*/;
+
+    result.innerHTML = content;
+
+</script>
+
+
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+
+</body>
+</html>

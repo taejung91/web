@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <th:block th:include="/../fragments/header"></th:block>
+    <style>
+
+      .container{
+      text-align: center;
+      }
+      .form-group{
+        display: inline-block;
+        width: 70%;
+      }
+    </style>
+
+</head>
+
+<body>
+
+
+<div class="container">
+    <form action="/members/searchId" th:action name="form" id="form" method="post">
+
+        <div class="form-group">
+            <h2><label class="form-label mt-4">아이디 찾기</label></h2><br>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control name" id="name" name="name" placeholder="이름" autofocus>
+                <label for="name">이름</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="tel" class="form-control pass" id="phone" name="phone" placeholder="전화번호">
+                <label for="phone">전화번호('-' 생략)</label>
+            </div>
+
+            <div class="form-floating mb-3" th:if="${param.status}" style="color:red"> 가입하지 않은 아이디이거나, 정보가 일치하지 않습니다.</div>
+
+            <div class="d-grid gap-2" >
+                <button type="submit" class="btn btn-dark">확인</button>
+                <button type="button" class="btn btn-outline-dark" th:onclick="|location.href='@{/members/login}'|" >취소</button>
+            </div>
+
+        </div>
+    </form>
+</div>
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+
+
+</body>
+</html>

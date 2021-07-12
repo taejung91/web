@@ -1,0 +1,244 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
+
+<head>
+    <th:block th:replace="/../fragments/header"></th:block>
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
+</head>
+<style>
+    body {
+
+    }
+
+    .card {
+        margin-top: 1em;
+    }
+
+    /* IMG displaying */
+    .person-card {
+        margin-top: 5em;
+        padding-top: 5em;
+    }
+
+    .person-card .card-title {
+        text-align: center;
+    }
+
+    .person-card .person-img {
+        width: 10em;
+        position: absolute;
+        top: -5em;
+        left: 50%;
+        margin-left: -5em;
+        border-radius: 100%;
+        overflow: hidden;
+        background-color: white;
+    }
+
+    input:read-only {
+        background-color: white;
+    }
+
+
+</style>
+
+<script th:inline="javascript">
+
+
+    function payment() {
+        let res_name = $("#res_name").val();
+        let price = $("#reserv_price").val();
+       /* let res_num = $("#res_num").val();
+        let reserv_date = $("#reserv_date").val();
+        let reserv_time = $("#reserv_time").val();
+        let reserv_qtt = $("#reserv_qtt").val();
+
+        let id = $("#id").val();*/
+        let m_name = $("#name").val();
+        let m_phone = $("#phone").val();
+
+        console.log(res_name+"/"+ price +"/"+ m_name +"/"+ m_phone);
+
+        IMP.init('imp03786685');
+
+        IMP.request_pay({
+            pg: 'kakaopay',
+            pay_method: 'card',
+            merchant_uid: 'merchant_' + new Date().getTime(),
+            name: res_name,
+            amount: price,
+            buyer_name: m_name,
+            buyer_tel: m_phone
+        }, function (rsp) {
+            if (rsp.success) {
+                //[1] 서버단에서 결제정보 조회를 위해 jQuery ajax로 imp_uid 전달하기
+                jQuery.ajax({
+                    data:{
+
+                        id: /*[[ ${member.id} ]]*/,
+                        res_num: /*[[ ${restaurant.num} ]]*/,
+                        reserv_date: /*[[ ${restaurant.date} ]]*/,
+                        reserv_time: /*[[ ${restaurant.time} ]]*/,
+                        reserv_qtt: /*[[ ${qtt} ]]*/,
+                        reserv_price: price,
+
+                    },
+                    url: "/payments/complete/" + rsp.imp_uid, //cross-domain error가 발생하지 않도록 동일한 도메인으로 전송
+                    type: 'POST'
+                   // dataType: 'json'
+                }).done(function (data) {
+                    //[2] 서버에서 REST API로 결제정보확인 및 서비스루틴이 정상적인 경우
+
+                    console.log(data);
+                    if (data == 1) {
+                        var msg = '결제가 완료되었습니다.';
+                        msg += '\n고유ID : ' + rsp.imp_uid;
+                        msg += '\n상점 거래ID : ' + rsp.merchant_uid;
+                        msg += '\n결제 금액 : ' + rsp.paid_amount;
+                        msg += '카드 승인번호 : ' + rsp.apply_num;
+
+                        alert(msg);
+
+                        document.location.href="/members/reservation";
+                    } else {
+                        //[3] 아직 제대로 결제가 되지 않았습니다.
+                        //[4] 결제된 금액이 요청한 금액과 달라 결제를 자동취소처리하였습니다.
+                    }
+                });
+            } else {
+                var msg = '결제에 실패하였습니다.';
+                msg += '에러내용 : ' + rsp.error_msg;
+
+                alert(msg);
+            }
+        });
+    }
+
+</script>
+
+
+<div class="container" style="margin-top: 1em;">
+    <!-- Sign up form -->
+    <form method="post">
+        <!-- Sign up card -->
+        <div class="card person-card">
+            <div class="card-body center">
+
+                <img class="person-img"
+                     src="https://visualpharm.com/assets/217/Life%20Cycle-595b40b75ba036ed117d9ef0.svg">
+                <h2 class="card-title">예약자 정보</h2>
+                <p></p>
+
+                <!-- First row (on medium screen) -->
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-3">
+                        <label for="name" class="col-form-label fw-bold">예약자</label>
+                        <input class="form-control" type="text" id="name" name="name" th:value="${member.name}"
+                               readonly>
+                        <input type="hidden" id="id" name="id" th:value="${member.id}">
+                    </div>
+                </div>
+                <p></p>
+
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-3">
+                        <label for="phone" class="col-form-label fw-bold">전화번호</label>
+                        <input class="form-control" type="text" id="phone" name="phone" th:value="${member.phone}"
+                               readonly>
+                    </div>
+                </div>
+                <p></p>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">식당 정보</h2>
+                        <div class="form-group col-md-7">
+                            <label for="res_name" class="col-form-label fw-bold">식당 이름</label>
+                            <input class="form-control" type="text" id="res_name" name="res_name" th:value="${restaurant.res_name}" readonly>
+                            <input type="hidden" id="res_num" name="res_num" th:value="${restaurant.num}">
+                        </div>
+                        <p></p>
+
+                        <div class="form-group col-md-7">
+                            <label for="kind" class="col-form-label fw-bold">종류</label>
+                            <input class="form-control" type="text" id="kind" name="kind" th:value="${restaurant.kind}"
+                                   readonly>
+                        </div>
+                        <p></p>
+
+                        <div class="form-group col-md-7">
+                            <label for="addr" class="col-form-label fw-bold">주소</label>
+                            <input class="form-control" type="text" id="addr" name="addr" th:value="${restaurant.addr}"
+                                   readonly>
+                        </div>
+                        <p></p>
+
+                        <div class="form-group col-md-7">
+                            <label for="tel" class="col-form-label fw-bold">전화번호</label>
+                            <input class="form-control" type="text" id="tel" name="tel" th:value="${restaurant.tel}"
+                                   readonly>
+                        </div>
+                        <p></p>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">예약 정보</h2>
+                        <p></p>
+                        <div class="form-group col-md-7">
+                            <label for="reserv_date" class="col-form-label fw-bold">예약일</label>
+                            <input class="form-control" type="text" id="reserv_date" name="reserv_date" th:value="${restaurant.date}"
+                                   readonly>
+                        </div>
+                        <p></p>
+
+                        <div class="form-group col-md-7">
+                            <label for="reserv_time" class="col-form-label fw-bold">예약 시간</label>
+                            <input class="form-control" type="text" id="reserv_time" name="reserv_time" th:value="${restaurant.time}"
+                                   readonly>
+                        </div>
+                        <p></p>
+
+                        <div class="form-group col-md-7">
+                            <label for="reserv_qtt" class="col-form-label fw-bold">예약 인원(명)</label>
+                            <input class="form-control" type="text" id="reserv_qtt" name="reserv_qtt" th:value="${qtt}"
+                                   readonly>
+                        </div>
+                        <p></p>
+
+                        <div class="form-group col-md-7">
+                            <label for="reserv_price" class="col-form-label fw-bold">예약금(원)</label>
+                            <input class="form-control" type="text" id="reserv_price" name="reserv_price" th:value="|${restaurant.price1 * qtt}|"
+                                   readonly>
+                        </div>
+                        <p></p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="justify-content-end" style="margin-top: 1em;">
+            <button type="button" class="btn-lg btn-dark" onclick="payment()">예약금 결제</button>
+            <a class="btn-lg btn-dark" th:href="@{/product/Detail/{num}(num=${restaurant.num})}">취소</a>
+        </div>
+
+    </form>
+</div>
+<p></p>
+
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+</body>
+</html>

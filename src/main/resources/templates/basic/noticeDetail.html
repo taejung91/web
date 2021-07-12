@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <th:block th:include="/../fragments/header"></th:block>
+    <style>
+
+        .container {
+            text-align: center;
+        }
+
+        .sub {
+            display: inline-block;
+            width: 100%;
+            height: 70px;
+
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="sub">
+
+            <thead>
+            <h2> 공 지 사 항</h2>
+            </thead>
+            <p></p>
+            <div class="table table-responsive">
+                <table class="table" border="1" cellpadding="10" width="50%" rules="rows"
+                       style="table-layout:fixed; border-left:none; border-right:none;">
+                    <tr>
+                        <td style="background:#E2E2E2">제목</td>
+                        <td colspan="3" style="text-align:left" th:text="${notice.title}"></td>
+                    </tr>
+                    <tr>
+                        <td style="background:#E2E2E2">작성자</td>
+                        <td colspan="3" style="text-align:left" th:text="${notice.writer}"></td>
+                    </tr>
+                    <tr>
+                        <td style="background:#E2E2E2">작성일</td>
+                        <td colspan="3" style="text-align:left" th:text="${notice.indate}"></td>
+                    </tr>
+                </table>
+                <table border="1" cellpadding="10" width="100%" rules="rows" style="table-layout:fixed;">
+                    <tr>
+                        <td style="background:#E2E2E2">내용</td>
+                        <td colspan="3" style="white-space: pre-line; text-align:justify;"
+                            th:text="${notice.content}"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="d-grid gap-2" th:object="${params}">
+                <a type="button" class="btn btn-dark" style="width:20%"
+                        th:href="|@{/basic/notice}*{makeQueryString(currentPageNo)}|">목록
+                </a>
+            </div>
+    </div>
+</div>
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+</body>
+</html>

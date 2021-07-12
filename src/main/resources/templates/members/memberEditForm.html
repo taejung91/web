@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <th:block th:include="/../fragments/header"></th:block>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+
+</head>
+
+
+<body>
+<div class="container">
+    <form action="/members/memberInfo.html" th:action name="form" id="form" method="post">
+    <div class="form-group">
+        <h2><label class="form-label mt-4">내정보</label></h2>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control id" id="id" name="id" style="width:70%" placeholder="아이디" th:value="${memberInfo.id}"readonly>
+            <label for="id">아이디</label>
+
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control pass" id="floatingPassword1" name="pw" style="width:70%" th:value="${memberInfo.pw}" placeholder="비밀번호" oninput="checkPwd()">
+            <label for="floatingPassword1">비밀번호(4~16)</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control pass" id="repwd" name="pwConfirm" style="width:70%" th:value="${memberInfo.pw}" placeholder="비밀번호 확인" oninput="checkPwd()">
+            <label for="repwd">비밀번호 확인</label>
+        </div>
+
+        <div class="form-floating mb-3" id="pwCheck" name="pwCheck"></div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control nickname" id="name" name="name" style="width:70%" placeholder="이름" th:value="${memberInfo.name}" oninput="checkName()">
+            <label for="name">이름</label>
+        </div>
+
+        <div class="form-floating mb-3" id="nameCheck" name="nameCheck"></div>
+
+        <div class="form-floating mb-3">
+            <input type="date" class="form-control" id="birth" name="birth" style="width:70%" placeholder="생년월일" th:value="${memberInfo.birth}">
+            <label for="birth">생년월일</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="tel" class="form-control" id="phone" name="phone" style="width:70%" placeholder="전화번호('-' 생략)" th:value="${memberInfo.phone}" oninput="checkPhone()">
+            <label for="phone">전화번호('-' 생략)</label>
+        </div>
+
+    </div>
+    <div class="form-floating mb-3">
+        <button type="submit" class="btn btn-dark signupbtn" >저장</button>
+        <button type="button" class="btn btn-outline-dark" th:onclick="|location.href='@{/members/{id}(id=${memberInfo.id})}'|">취소</button>
+    </div>
+    </form>
+</div> <!-- /container -->
+
+<script>
+
+	    //공백
+		var empJ = /\s/g;
+		//아이디 정규식
+		var idJ = /^[a-z0-9]{4,16}$/;
+		// 비밀번호 정규식
+		var pwJ = /^[A-Za-z0-9]{4,16}$/;
+		// 이름 정규식
+		var nameJ = /^[가-힣]{2,6}$/;
+
+		// 전화번호 검사 정규식
+		var tel = /^[0-9]{9,11}$/;
+		//var tel = /^\d{2,3}-\d{3,4}-\d{4}$/;
+
+    //아이디와 비밀번호가 맞지 않을 경우 가입버튼 비활성화를 위한 변수설정
+
+    var nameCheck = 0;
+    var pwdCheck = 0;
+
+    // 메시지
+
+    var str2 = document.getElementById("pwCheck");
+    var str3 = document.getElementById("nameCheck");
+    var str4 = document.getElementById("phoneCheck");
+
+  //재입력 비밀번호 체크하여 가입버튼 비활성화 또는 맞지않음을 알림.
+    function checkPwd() {
+
+        var inputed = $('.pass').val();
+        var reinputed = $('#repwd').val();
+        console.log(inputed);
+        console.log(reinputed);
+        if(reinputed == "" && (inputed != reinputed || inputed == reinputed)){
+            pwdCheck = 0;
+            $(".signupbtn").prop("disabled", true);
+            $(".signupbtn").css("background-color", "#aaaaaa");
+            $("#repwd").css("background-color", "#FFCECE");
+
+            $("#pwCheck").css("color", "#ff0000");
+            str2.textContent = "비밀번호를 다시 입력해주세요.";
+        }
+        else if(reinputed == "" || pwJ.test(inputed) == false || empJ.test(inputed) == true){
+            pwdCheck = 0;
+            $(".signupbtn").prop("disabled", true);
+            $(".signupbtn").css("background-color", "#aaaaaa");
+            $("#repwd").css("background-color", "#FFCECE");
+
+            $("#pwCheck").css("color", "#ff0000");
+            str2.textContent = "비밀번호를 다시 입력해주세요.";
+        }
+        else if (inputed == reinputed) {
+            $("#repwd").css("background-color", "#B0F6AC");
+            str2.textContent = " ";
+
+            pwdCheck = 1;
+            if(pwdCheck == 1 || nameCheck ==1) {
+                $(".signupbtn").prop("disabled", false);
+                $(".signupbtn").css("background-color", "#4CAF50");
+            }
+        } else if (inputed != reinputed) {
+            pwdCheck = 0;
+            $(".signupbtn").prop("disabled", true);
+            $(".signupbtn").css("background-color", "#aaaaaa");
+            $("#repwd").css("background-color", "#FFCECE");
+
+            $("#pwCheck").css("color", "#ff0000");
+            str2.textContent = "비밀번호를 다시 입력해주세요.";
+
+        }
+    }
+
+    //이름 입력하지 않았을 경우 가입버튼 비활성화
+    function checkName() {
+        var name = $("#name").val();
+        console.log(name);
+
+        if(name == "" || nameJ.test(name) == false || empJ.test(name) == true){
+            nameCheck = 0;
+            $(".signupbtn").prop("disabled", true);
+            $(".signupbtn").css("background-color", "#aaaaaa");
+            $("#name").css("background-color", "#FFCECE");
+
+            $("#nameCheck").css("color", "#ff0000");
+            str3.textContent = "이름을 다시 입력해주세요.";
+
+        }else if(name != "") {
+             $("#name").css("background-color", "#B0F6AC");
+             str3.textContent = " ";
+             nameCheck = 1;
+             if(nameCheck ==1 || pwdCheck == 1) {
+                 $(".signupbtn").prop("disabled", false);
+                 $(".signupbtn").css("background-color", "#4CAF50");
+             }
+        }else if (pwdCheck == 0){
+                  $(".signupbtn").prop("disabled", true);
+                  $(".signupbtn").css("background-color", "#aaaaaa");
+                  $("#name").css("background-color", "#FFCECE");
+
+                  $("#nameCheck").css("color", "#ff0000");
+                  str3.textContent = "이름을 다시 입력해주세요.";
+
+                  nameCheck = 0;
+        }
+    }
+
+    function checkPhone(){
+
+        var phone = $('#phone').val();
+        console.log(phone);
+
+        if(phone == ""){
+             $("#phone").css("background-color", "#FFFFFF");
+             $(".signupbtn").prop("disabled", false);
+             $(".signupbtn").css("background-color", "#4CAF50");
+             str4.textContent = " ";
+
+
+        }else if(phone != "" && (tel.test(phone) == false || empJ.test(phone) == true)){
+
+            $(".signupbtn").prop("disabled", true);
+            $(".signupbtn").css("background-color", "#aaaaaa");
+            $("#phone").css("background-color", "#FFCECE");
+
+            $("#phoneCheck").css("color", "#ff0000");
+            str4.textContent = "전화번호를 다시 입력해주세요.";
+        }else if(phone != "" && (tel.test(phone) == true && empJ.test(phone) == false)){
+             $("#phone").css("background-color", "#FFFFFF");
+             $(".signupbtn").prop("disabled", false);
+             $(".signupbtn").css("background-color", "#4CAF50");
+             str4.textContent = " ";
+
+        }
+
+    }
+
+</script>
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+</body>
+</html>
+
+</html>
+</html>

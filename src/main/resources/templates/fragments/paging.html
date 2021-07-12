@@ -1,0 +1,80 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<nav th:fragment="pagination" th:if="${params != null and params.paginationInfo.totalRecordCount > 0}"
+     th:object="${params.paginationInfo}" th:with="info=${params.paginationInfo}" aria-label="Page navigation"
+     class="text-center">
+    <ul class="pagination  justify-content-center">
+
+        <li class="page-item"
+            th:if="*{hasPreviousPage == true}"
+            th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${params.makeQueryString(1)} ]])">
+            <a class="page-link"
+               href="javascript:void(0)" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+        </li>
+
+        <li class="page-item"
+            th:if="*{hasPreviousPage == true}"
+            th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${params.makeQueryString(info.firstPage - 1)} ]])">
+            <a class="page-link"
+               href="javascript:void(0)" aria-label="Previous"><span aria-hidden="true">&lsaquo;</span></a>
+        </li>
+
+        <li class="page-item"
+            th:each="pageNo : *{#numbers.sequence( firstPage, lastPage )}"
+            th:class="${pageNo == params.currentPageNo} ? 'page-item active'">
+            <a class="page-link"
+               href="javascript:void(0)" th:text="${pageNo}"
+               th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${params.makeQueryString(pageNo)} ]])"></a>
+        </li>
+
+        <li class="page-item"
+            th:if="*{hasNextPage == true}"
+            th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${params.makeQueryString(info.lastPage + 1)} ]])">
+            <a class="page-link"
+               href="javascript:void(0)" aria-label="Next"><span aria-hidden="true">&rsaquo;</span></a>
+        </li>
+        <li class="page-item"
+            th:if="*{hasNextPage == true}"
+            th:onclick="movePage([[ ${#request.requestURI} ]], [[ ${params.makeQueryString(info.totalPageCount)} ]])">
+            <a class="page-link"
+               href="javascript:void(0)" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+        </li>
+
+    </ul>
+</nav>
+
+<div class="row" th:fragment="search" id="adv-search">
+    <div>
+    <form action="qnaList.html" name="form" id="form" th:action="@{/basic/qna}" method="get">
+
+        <input type="hidden" name="currentPageNo" value="1"/>
+        <input type="hidden" name="recordsPerPage" th:value="${params.recordsPerPage}"/>
+        <input type="hidden" name="pageSize" th:value="${params.pageSize}"/>
+
+        <select id="searchType" name="searchType">
+            <option value="title">제목</option>
+            <option value="writer">작성자</option>
+        </select>
+        <input type="text" name="searchKeyword" id="searchKeyword">
+        <button class="btn btn-secondary" type="button" onclick="check()">검색</button>
+    </form>
+
+    <script>
+        function check(){
+            let text = $("#searchKeyword").val();
+
+            if(text == ""){
+                alert("내용을 입력해주세요.");
+                return false;
+            }else {
+                document.form.action = "/basic/qna";
+                document.form.submit();
+            }
+
+
+        }
+    </script>
+    </div>
+</div>
+
+</html>

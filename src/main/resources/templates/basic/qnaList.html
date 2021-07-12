@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html lang="en">
+<head>
+    <th:block th:include="/../fragments/header"></th:block>
+    <style>
+
+        .container {
+            text-align: center;
+        }
+
+        .sub {
+            display: inline-block;
+            width: 70%;
+            height: 70px;
+
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <table class="table table-hover">
+        <div class="sub">
+
+            <thead>
+            <h2> 문의 게시판</h2>
+            </thead>
+            <p></p>
+            <tbody>
+            <tr class="table-dark">
+                <th scope="row" width="15">번호</th>
+                <td width="200">제 목</td>
+                <td width="15">작성자</td>
+                <td width="15">조회수</td>
+                <td width="30">작성일</td>
+            </tr>
+
+
+            <div th:each="qna : ${qnaList}">
+                <tr>
+
+                    <th scope="col" th:text="${qna.num}">번호</th>
+
+                    <div th:if="${qna.pw == ''}">
+                        <th scope="col">
+                            <a th:text="${qna.title}" th:href="|@{/basic/qna/{num}(num=${qna.num})}${params.makeQueryString(params.currentPageNo)}|"
+                               style="color: black"> 제목 </a>
+                        </th>
+                    </div>
+                    <div th:unless="${qna.pw == ''}">
+                        <th scope="col">
+                            <a th:text="|[비공개] ${qna.title}|" th:href="|@{/basic/qna/{num}/confirm(num=${qna.num})}${params.makeQueryString(params.currentPageNo)}|"
+                               style="color: black"> 제목 </a>
+                        </th>
+                    </div>
+
+                    <th scope="col" th:text="${qna.writer}">작성자</th>
+                    <th scope="col" th:text="${qna.inquiry}">조회수</th>
+                    <th scope="col" th:text="${qna.indate}">작성일</th>
+
+                </tr>
+                <tr scope="col" th:if="${qna.reply}">
+                    <th scope="col"></th>
+
+                    <th scope="col"><a th:text="|[답변완료] ${qna.title}|"
+                                       th:href="|@{/basic/qna/{num}/reply(num=${qna.num})}${params.makeQueryString(params.currentPageNo)}|" style="color: black"> 제목 </a>
+                    </th>
+
+                    <th scope="col">관리자</th>
+                    <th scope="col" th:text="${qna.reply_inquiry}">조회수</th>
+                    <th scope="col" th:text="${qna.reply_indate}">작성일</th>
+                </tr>
+            </div>
+            </tbody>
+        </div>
+
+    </table>
+    <p></p>
+
+    <th:block layout:fragment="search">
+        <div th:replace="fragments/paging :: search"></div>
+    </th:block>
+
+    <div class="row justify-content-end">
+        <a type="button" class="btn btn-dark" style="width:20%" th:href="|@{/basic/qnaAdd}${params.makeQueryString(params.currentPageNo)}|">
+            문의하기
+        </a>
+    </div>
+
+    <th:block layout:fragment="paging">
+        <nav th:replace="fragments/paging :: pagination"></nav>
+    </th:block>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        function movePage(uri, queryString) {
+            location.href = uri + queryString;
+        }
+
+        /*]]>*/
+    </script>
+</th:block>
+
+
+<script th:inline="javascript">
+
+    let replyConfirm = /*[[ ${param.status}]]*/;
+
+    if (replyConfirm == "false") {
+
+        alert("권한이 없습니다.");
+    }
+</script>
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+</body>
+</html>

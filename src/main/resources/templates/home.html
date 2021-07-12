@@ -1,0 +1,109 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
+
+<head>
+    <th:block th:include="/../fragments/header"></th:block>
+    <link rel="stylesheet" href="../css/owl.carousel.min.css"/>
+    <link rel="stylesheet" href="../css/owl.theme.default.min.css"/>
+    <style>
+
+        img { display: block; margin: 0px auto; }
+
+    </style>
+</head>
+
+<body>
+<main>
+    <div class="container">
+    <div class="text-center bg-body">
+        <!--<div class="col-md-5 p-lg-5 mx-auto my-5">-->
+        <div class="owl-carousel owl-theme">
+            <div class="item first">
+                <img class="title" style="width:95%" th:src="@{/banner/main3.jpg}" alt="..."/>
+
+            </div>
+            <div class="item second">
+                <img class="title" style="width:95%" th:src="@{/banner/main2.jpg}" alt="..."/>
+
+            </div>
+            <div class="item third">
+                <img class="title" style="width:95%" th:src="@{/banner/main4.jpg}" alt="..."/>
+            </div>
+
+        </div>
+
+        <a class="btn btn-outline-secondary" th:href="@{/product/list}">예약하기</a>
+
+        <!-- </div>-->
+    </div>
+    </div>
+</main>
+
+<!-- Section-->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-3 gx-lg-4 row-cols-2 row-cols-md-2 row-cols-xl-3 justify-content-center">
+
+            <div th:each=" restaurant : ${restaurants}">
+                <div class="col mb-5">
+                    <div class="card h-100">
+                        <!-- Sale badge-->
+                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem"
+                             th:if="${restaurant.bestyn == 'y'}">
+                            Best
+                        </div>
+                        <!-- Product image-->
+                        <img class="card-img-top" th:src="${restaurant.image}" alt="..." style="width: 100%; height: 250px;"/>
+                        <!-- Product details-->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <!-- Product name-->
+                                <h5 class="fw-bolder" th:text="${restaurant.res_name}">식당 이름</h5>
+                                <!-- Product price-->
+                                <span th:text="|예약금 : ${restaurant.price1} 원|">가격</span></br>
+                                <!--<span th:text="|청소년 : ${restaurant.price2} 원|">가격</span>-->
+
+                            </div>
+                        </div>
+                        <!-- Product actions-->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center"><a class="btn btn-outline-dark mt-auto"
+                                                        th:href="@{/product/Detail/{num} (num=${restaurant.num})}">예약하기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var owl = $('.owl-carousel');
+
+        owl.owlCarousel({
+            items: 1,                 // 한번에 보여줄 아이템 수
+            loop: true,               // 반복여부
+            autoplay: true,           // 자동재생 여부
+            autoplayTimeout: 2000,    // 재생간격
+            autoplayHoverPause: true  //마우스오버시 멈출지 여부
+        });
+    });
+</script>
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="../js/owl.carousel.min.js"></script>
+
+<!--
+<script src="../js/app.js"></script>
+-->
+
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+
+</body>
+</html>

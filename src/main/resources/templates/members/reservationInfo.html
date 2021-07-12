@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <th:block th:include="/../fragments/header"></th:block>
+    <style>
+
+        .container {
+            text-align: center;
+        }
+
+        .sub {
+            display: inline-block;
+            width: 70%;
+            height: 70px;
+
+        }
+    </style>
+</head>
+
+<body>
+<script th:inline="javascript">
+
+    let result = /*[[ ${param.status} ]]*/;
+
+    if(result != null){
+        alert("예약이 취소되었습니다.");
+    }
+
+</script>
+
+<div class="container">
+    <table class="table table-hover">
+        <div class="sub">
+
+            <thead>
+            <h1> 예약 상황</h1>
+            </thead>
+            <p></p>
+            <tbody>
+            <tr class="table-dark">
+                <th scope="row" width="20">예약번호</th>
+                <th width="25">예약상황</th>
+                <th width="20">예약자</th>
+                <th width="5">예약일</th>
+                <th width="10">인원</th>
+                <th width="30">식당</th>
+                <th width="140">주소</th>
+                <th width="20">전화번호</th>
+
+            </tr>
+
+
+            <div th:each="reservation : ${reservations}">
+
+                <tr style = "cursor:pointer;" th:onclick="|location.href='@{/members/reservation/detail (num=${reservation.reserv_num})}'|">
+
+                    <td scope="col" th:text="${reservation.reserv_num}">예약번호</td>
+
+                    <td class="fw-bold" style="color: blue" th:if="${reservation.result == '0'}" scope="col">예약완료</td>
+                    <td class="fw-bold" style="color: red" th:unless="${reservation.result == '0'}" scope="col">예약대기</td>
+
+                    <td scope="col" th:text="${reservation.name}">예약자</td>
+                    <td scope="col" th:text="|${reservation.reserv_date} _ ${reservation.reserv_time}|">예약일</td>
+                    <td scope="col" th:text="${reservation.reserv_qtt}">인원</td>
+                    <td scope="col" th:text="${reservation.res_name}">식당</td>
+                    <td scope="col" th:text="${reservation.addr}">주소</td>
+                    <td scope="col" th:text="${reservation.tel}">전화번호</td>
+
+                </tr>
+
+            </div>
+            </tbody>
+        </div>
+
+    </table>
+    <p></p>
+
+    <div class="row justify-content-end">
+        <a type="button" class="btn btn-dark" style="width:20%" th:href="@{/basic/qnaAdd}">문의하기</a>
+    </div>
+
+</div>
+
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+</body>
+</html>

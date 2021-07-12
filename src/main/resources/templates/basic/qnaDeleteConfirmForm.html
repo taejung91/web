@@ -1,0 +1,41 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <th:block th:include="/../fragments/header"></th:block>
+    <style>
+
+        .container{
+            text-align: center;
+        }
+        .form-group{
+            display: inline-block;
+            width: 70%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <form action="/basic/qnaDeleteConfirmForm.html" th:action name="form" id="form" method="post">
+
+        <div class="form-group">
+            <h2><label class="form-label mt-4">문의글 삭제</label></h2><br>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control pw" id="pw" name="pw" placeholder="비밀번호" autofocus>
+                <label for="pw">비밀번호</label>
+            </div>
+
+            <div class="form-floating mb-3" th:if="${param.status}" style="color:red"> 비밀번호가 일치하지 않습니다.</div>
+
+            <div class="d-grid gap-2" >
+                <button type="submit" class="btn btn-dark">확인</button>
+                <a type="button" class="btn btn-outline-dark" th:href="|@{/basic/qna/{num}(num=${qna.num})}${params.makeQueryString(params.currentPageNo)}|" >취소</a>
+            </div>
+
+        </div>
+    </form>
+</div>
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+</body>
+</html>

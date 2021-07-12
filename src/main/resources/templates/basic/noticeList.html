@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <th:block th:include="/../fragments/header"></th:block>
+    <style>
+
+        .container {
+            text-align: center;
+
+        }
+
+        .sub {
+            display: inline-block;
+            width: 70%;
+            height: 70px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+    <table class="table table-hover">
+        <div class="sub">
+
+            <thead>
+            <h2> 공 지 사 항</h2>
+            </thead>
+            <p></p>
+            <tbody>
+            <tr class="table-dark">
+                <th scope="row" width="15">번호</th>
+                <td width="200">제 목</td>
+                <td width="15">작성자</td>
+                <td width="15">조회수</td>
+                <td width="30">작성일</td>
+            </tr>
+
+            <tr th:each="notice : ${notices}">
+
+                <th scope="col" th:text="${notice.num}">번호</th>
+                <th scope="col"><a th:text="${notice.title}" th:href="|@{/basic/notice/{num}(num=${notice.num})}${params.makeQueryString(params.currentPageNo)}|"
+                                   style="color: black"> 제목 </a></th>
+                <th scope="col" th:text="${notice.writer}">작성자</th>
+                <th scope="col" th:text="${notice.inquiry}">조회수</th>
+                <th scope="col" th:text="${notice.indate}">작성일</th>
+
+            </tr>
+
+            </tbody>
+        </div>
+    </table>
+
+    <th:block layout:fragment="paging">
+        <nav th:replace="fragments/paging :: pagination"></nav>
+    </th:block>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        function movePage(uri, queryString) {
+            location.href = uri + queryString;
+        }
+
+        /*]]>*/
+    </script>
+</th:block>
+
+<th:block layout:fragment="footer">
+    <nav th:replace="fragments/footer :: footer"></nav>
+</th:block>
+</body>
+</html>
